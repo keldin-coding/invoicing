@@ -24,6 +24,7 @@ gem 'turbolinks', '~> 5'
 gem 'jbuilder', '~> 2.5'
 
 gem 'webpacker', '~> 3.5'
+gem 'factory_bot', '~> 4.10'
 # Use Redis adapter to run Action Cable in production
 # gem 'redis', '~> 4.0'
 # Use ActiveModel has_secure_password
@@ -38,11 +39,12 @@ gem 'webpacker', '~> 3.5'
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.1.0', require: false
 
-gem 'oj'
+gem 'oj', '~> 3.6.4'
 
 group :development, :test do
   gem 'pry-byebug'
   gem 'rspec-rails'
+  gem 'shoulda-matchers', git: 'https://github.com/thoughtbot/shoulda-matchers.git', branch: 'rails-5'
 end
 
 group :development do

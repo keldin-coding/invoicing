@@ -30,4 +30,10 @@
 # available at http://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: "Hello world"
+  activerecord:
+    errors:
+      models:
+        line_item:
+          attributes:
+            name:
+              taken: 'should be unique for a given campaign'  
