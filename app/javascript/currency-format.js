@@ -5,7 +5,7 @@ const currencyFormat = num => {
 
   if (!fractionalPart) {
     return `$${integerPart}.00`;
-  } else if (fractionalPart.length == 2) {
+  } else if (fractionalPart.length === 2) {
     return `$${integerPart}.${fractionalPart}`;
   } else if (fractionalPart.length > 2) {
     return `$${integerPart}.${fractionalPart.substr(0, 2)}`;

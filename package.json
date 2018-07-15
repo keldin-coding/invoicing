@@ -10,7 +10,8 @@
     "popper.js": "^1.14.3",
     "prop-types": "^15.6.2",
     "react": "^16.4.1",
-    "react-dom": "^16.4.1"
+    "react-dom": "^16.4.1",
+    "underscore": "^1.9.1"
   },
   "devDependencies": {
     "webpack-dev-server": "2.11.2"
