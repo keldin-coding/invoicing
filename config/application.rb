@@ -19,3 +19,6 @@ module Invoicing
     # the framework and any gems in your application.
   end
 end
+
+Oj.optimize_rails
+Oj.default_options = { mode: :rails }
