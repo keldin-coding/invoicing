@@ -16,7 +16,11 @@ describe CampaignSerializer do
       line_item_3
     end
 
-    it "includes the campaign's name" do
+    it "includes the id" do
+      expect(subject[:id]).to eq(campaign.id)
+    end
+
+    it 'includes the name' do
       expect(subject[:name]).to eq(campaign.name)
     end
 
@@ -24,7 +28,7 @@ describe CampaignSerializer do
       expect(subject[:lineItems]).to eq([line_item_1.as_json, line_item_3.as_json])
     end
 
-    it 'includes the billable amount for the campaign' do
+    it 'includes the billable amount' do
       expect(subject[:billableAmount]).to eq(campaign.billable_amount.round(4))
     end
   end
