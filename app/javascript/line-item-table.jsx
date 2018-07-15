@@ -12,10 +12,10 @@ export default class LineItemTable extends React.Component {
         shape({
           id: number, 
           name: string,
-          campaignName: string, 
           bookedAmount: number, 
           actualAmount: number, 
-          adjustments: number 
+          adjustments: number,
+          billableAmount: number
         })
       )
     };
@@ -33,6 +33,10 @@ export default class LineItemTable extends React.Component {
         <thead>
           <tr>
             <th>Name</th>
+            <th>Booked Amount</th>
+            <th>Actual Amount</th>
+            <th>Adjustments</th>
+            <th>Billable Amount</th>
           </tr>
         </thead>
         <tbody>
