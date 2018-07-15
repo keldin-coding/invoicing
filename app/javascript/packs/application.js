@@ -7,8 +7,12 @@
 // To reference this file, add <%= javascript_pack_tag 'application' %> to the appropriate
 // layout file, like app/views/layouts/application.html.erb
 
+import 'bootstrap';
+import './src/application.scss';
+
 import React from 'react';
 import ReactDOM from 'react-dom';
-import LineItemTable from './line_item_table';
 
-ReactDOM.render(<LineItemTable />, document.getElementById('root'));
+import App from '../app';
+
+ReactDOM.render(<App />, document.getElementById('root'));
