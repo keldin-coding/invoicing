@@ -42,6 +42,7 @@ gem 'bootsnap', '>= 1.1.0', require: false
 gem 'oj', '~> 3.6.4'
 
 group :development, :test do
+  gem 'faker', '~> 1.9'
   gem 'pry-byebug'
   gem 'rspec-rails'
   gem 'shoulda-matchers', git: 'https://github.com/thoughtbot/shoulda-matchers.git', branch: 'rails-5'

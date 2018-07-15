@@ -19,7 +19,7 @@ export default class App extends React.Component {
     axios.get('http://localhost:3000/line_items')
       .then(response => { 
         console.log(response); 
-        this.setState({ lineItems: response.data.line_items })
+        this.setState({ lineItems: response.data.lineItems })
       });
   }
 

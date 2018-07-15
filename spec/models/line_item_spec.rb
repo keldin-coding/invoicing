@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 describe LineItem, type: :model do
@@ -9,5 +11,14 @@ describe LineItem, type: :model do
     it { is_expected.to validate_presence_of(:booked_amount) }
     it { is_expected.to validate_presence_of(:actual_amount) }
     it { is_expected.to validate_presence_of(:adjustments) }
+    it { is_expected.to validate_presence_of(:campaign) }
+  end
+
+  describe '#subtotal' do
+    let(:line_item) { build(:line_item, actual_amount: 100, adjustments: -10) }
+
+    it 'equals the actual amount plus any adjustments' do
+      expect(line_item.subtotal).to eq(90)
+    end
   end
 end

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export default class LineItemRow extends React.Component {
-  static get PropTypes() {
+  static get propTypes() {
     const { number, string } = PropTypes;
 
     return {
@@ -18,7 +18,7 @@ export default class LineItemRow extends React.Component {
   render() {
     const { id, name } = this.props;
     return (
-      <tr key={id}>
+      <tr>
         <td>{name}</td>
       </tr>
     );

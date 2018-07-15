@@ -36,7 +36,7 @@ export default class LineItemTable extends React.Component {
           </tr>
         </thead>
         <tbody>
-          {lineItems.map(item => <LineItemRow {...item}/>)}
+          {lineItems.map(item => <LineItemRow key={item.id} {...item}/>)}
         </tbody>
       </table>
     );

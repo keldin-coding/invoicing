@@ -7,4 +7,9 @@ class LineItem < ApplicationRecord
   validates :booked_amount, presence: true
   validates :actual_amount, presence: true
   validates :adjustments, presence: true
+  validates :campaign, presence: true
+
+  def subtotal
+    actual_amount + adjustments
+  end
 end

@@ -2,22 +2,14 @@
 
 class LineItemsController < ApplicationController
   def index
-    items = LineItem.limit(50).offset(offset)
+    items = LineItem.includes(:campaign)
 
-    render json: { line_items: items }
-  end
-
-  def show
-    LineItem.find(params[:id])
+    render json: Oj.dump({ lineItems: items.map(&:as_json) })
   end
 
   def update
     line_item = LineItem.find(params[:id])
-  end
 
-  private
-
-  def offset
-    params[:page].to_i * page_size
+    render json: Oj.dump(item.as_json)
   end
 end
