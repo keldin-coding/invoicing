@@ -9,7 +9,7 @@ class LineItem < ApplicationRecord
   validates :adjustments, presence: true
   validates :campaign, presence: true
 
-  def subtotal
+  def billable_amount
     actual_amount + adjustments
   end
 end

@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   root to: 'home#index'
 
   defaults format: :json do
-    resources :line_items, only: [:index, :update, :show]
+    resources :line_items, only: [:update]
+    resources :campaigns, only: [:index]
   end
 end

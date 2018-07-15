@@ -14,11 +14,11 @@ describe LineItem, type: :model do
     it { is_expected.to validate_presence_of(:campaign) }
   end
 
-  describe '#subtotal' do
+  describe '#billable_amount' do
     let(:line_item) { build(:line_item, actual_amount: 100, adjustments: -10) }
 
     it 'equals the actual amount plus any adjustments' do
-      expect(line_item.subtotal).to eq(90)
+      expect(line_item.billable_amount).to eq(90)
     end
   end
 end

@@ -5,7 +5,7 @@ require 'rails_helper'
 describe LineItemSerializer do
   describe '#as_json' do
     let(:line_item) { build(:line_item) }
-    
+
     subject { LineItemSerializer.new(line_item).as_json }
 
     it 'includes the id' do
@@ -14,10 +14,6 @@ describe LineItemSerializer do
 
     it 'includes the name' do
       expect(subject).to match(hash_including(name: line_item.name))
-    end
-
-    it 'includes the campaignName' do
-      expect(subject).to match(hash_including(campaignName: line_item.campaign.name))
     end
 
     it 'includes the bookedAmount rounded to four decimal points' do
@@ -32,8 +28,8 @@ describe LineItemSerializer do
       expect(subject).to match(hash_including(adjustments: line_item.adjustments.round(4)))
     end
 
-    it 'includes the subtotal rounded to four decimal points' do
-      expect(subject).to match(hash_including(subtotal: line_item.subtotal.round(4)))
+    it 'includes the billableAmount rounded to four decimal points' do
+      expect(subject).to match(hash_including(billableAmount: line_item.billable_amount.round(4)))
     end
   end
 end
