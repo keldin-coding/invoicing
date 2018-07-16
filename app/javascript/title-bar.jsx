@@ -18,6 +18,12 @@ export default class TitleBar extends React.Component {
     this.delayedOnFilterChange(value);
   }
 
+  renderLoadingBadge = () => {
+    const { loadedData } = this.props;
+
+
+  }
+
   render() {
     const { grandTotal } = this.props;
 
@@ -30,6 +36,7 @@ export default class TitleBar extends React.Component {
         <span id="campaign-filter">
           Filter: <input type="search" onChange={this.handleFilterChange} />
         </span>
+        {this.renderLoadingBage()}
       </div>
     );
   }
