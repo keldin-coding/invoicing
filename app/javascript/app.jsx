@@ -54,8 +54,8 @@ export default class App extends React.Component {
 
     return (
       <div>
-        {<TitleBar grandTotal={grandTotal} onFilterChange={this.handleFilterChange} loadedData={loadedData}/>}
-        {loadedData && campaigns.map(campaign => <Campaign key={campaign.id} {...campaign}/>)}
+        {<TitleBar grandTotal={grandTotal} onFilterChange={this.handleFilterChange}/>}
+        {loadedData ? campaigns.map(campaign => <Campaign key={campaign.id} {...campaign}/>) : <div className="loading">Loading...</div>}
       </div>
     );
   }

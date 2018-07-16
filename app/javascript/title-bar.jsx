@@ -1,10 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import 'babel-polyfill';
+
 import currencyFormat from './currency-format';
 import _ from 'underscore';
 
 export default class TitleBar extends React.Component {
+  constructor(...args) {
+    super(...args);
+    this.state = { value: '' };
+  }
 
   componentDidMount() {
     this.delayedOnFilterChange = _.debounce(this.props.onFilterChange, 750);
@@ -18,14 +24,9 @@ export default class TitleBar extends React.Component {
     this.delayedOnFilterChange(value);
   }
 
-  renderLoadingBadge = () => {
-    const { loadedData } = this.props;
-
-
-  }
-
   render() {
     const { grandTotal } = this.props;
+    const { value } = this.state;
 
     return (
       <div id="title-bar">
@@ -34,9 +35,8 @@ export default class TitleBar extends React.Component {
           <span className="badge badge-info">{currencyFormat(grandTotal)}</span>
         </h1>
         <span id="campaign-filter">
-          Filter: <input type="search" onChange={this.handleFilterChange} />
+          Filter: <input type="search" onChange={this.handleFilterChange} value={value}/>
         </span>
-        {this.renderLoadingBage()}
       </div>
     );
   }
