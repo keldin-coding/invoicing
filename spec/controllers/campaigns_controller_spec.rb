@@ -4,20 +4,118 @@ require 'rails_helper'
 
 describe CampaignsController, type: :controller do
   describe '#index' do
+    subject(:parsed_response) { Oj.load(response.body, symbol_keys: true) }
 
-    it 'returns all of the campaigns with their line items' do
-      campaign_1 = create(:campaign)
-      campaign_2 = create(:campaign)
+    it 'returns the the campaigns with their line items' do
+      campaign = create(:campaign)
 
-      first = create(:line_item, campaign: campaign_1)
-      second = create(:line_item, campaign: campaign_2)
-      third = create(:line_item, campaign: campaign_1)
+      first = create(:line_item, campaign: campaign)
+      second = create(:line_item, campaign: campaign)
 
       get :index
 
-      parsed_response = Oj.load(response.body, symbol_keys: true)
+      expect(parsed_response).to eq(
+        {
+          campaigns: [campaign.as_json],
+          moreResults: false
+        }
+      )
+    end
 
-      expect(parsed_response).to eq([campaign_1.as_json, campaign_2.as_json])
+    context 'when there are no results' do
+      it 'returns an empty array' do
+        get :index
+
+        expect(parsed_response).to eq({campaigns: [], moreResults: false})
+      end
+    end
+
+    describe 'pagination' do
+      before do
+        number_of_campaigns.times { create(:campaign) }
+      end
+
+      let(:number_of_campaigns) { 1 }
+
+      context 'when requesting a negative page number' do
+        it 'returns the first page of results' do
+          get :index, params: { page: -1 }
+
+          expect(parsed_response).to eq({campaigns: [Campaign.first.as_json], moreResults: false})
+        end
+      end
+
+      context 'when there are only ten results' do
+        let(:number_of_campaigns) { 10 }
+
+        it 'sets moreResults to false on the first page' do
+          get :index, params: { page: 1 }
+
+          expect(parsed_response).to match(hash_including(moreResults: false))
+        end
+
+        it 'returns the first ten campaigns on page 0' do
+          get :index
+
+          expect(parsed_response).to match(hash_including(campaigns: Campaign.first(10).map(&:as_json)))
+        end
+
+        it 'returns the first ten campaigns on page 1' do
+          get :index, params: { page: 1 }
+
+          expect(parsed_response).to match(hash_including(campaigns: Campaign.first(10).map(&:as_json)))
+        end
+
+        it 'returns an empty array of campaigns for later pages' do
+          get :index, params: { page: 2 }
+
+          expect(parsed_response).to match(hash_including(campaigns: []))
+        end
+      end
+
+      context 'when there are fewer than ten results' do
+        let(:number_of_campaigns) { 5 }
+
+        it 'sets moreResults to false' do
+          get :index, params: { page: 1 }
+
+          expect(parsed_response).to match(hash_including(moreResults: false))
+        end
+
+        it 'returns those campaigns' do
+          get :index, params: { page: 1 }
+
+          expect(parsed_response).to match(hash_including(campaigns: Campaign.first(number_of_campaigns).map(&:as_json)))
+        end
+      end
+
+      context 'when there are more than ten results' do
+        let(:number_of_campaigns) { 11 }
+
+        it 'sets moreResults to true on the first page' do
+          get :index, params: { page: 1 }
+
+          expect(parsed_response).to match(hash_including(moreResults: true))
+        end
+
+        it 'sets moreResults to false on the last page' do
+          get :index, params: { page: 2 }
+
+          expect(parsed_response).to match(hash_including(moreResults: false))
+        end
+
+        it 'returns the first ten campaigns on the first page' do
+          get :index, params: { page: 1 }
+
+          expect(parsed_response).to match(hash_including(campaigns: Campaign.first(10).map(&:as_json)))
+        end
+
+        it 'returns however many are left on the last page' do
+          get :index, params: { page: 2 }
+
+          expect(parsed_response).to match(hash_including(campaigns: Campaign.limit(10).offset(10).map(&:as_json)))
+        end
+      end
     end
   end
 end
