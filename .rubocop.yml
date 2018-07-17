@@ -1,3 +1,10 @@
+AllCops:
+  Exclude:
+    - 'db/*'
+    - 'node_modules/**/*'
+    - 'app/assets/**/*'
+    - 'app/javascript/**/*'
+
 Metrics/LineLength:
   Max: 120
 

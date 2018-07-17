@@ -9,6 +9,8 @@ class LineItem < ApplicationRecord
   validates :adjustments, presence: true, numericality: true
   validates :campaign, presence: true
 
+  after_find :readonly!, if: :reviewed?
+
   def billable_amount
     actual_amount + adjustments
   end

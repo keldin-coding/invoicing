@@ -12,12 +12,13 @@ export default class LineItemRow extends React.Component {
     this.state = {
       adjustmentValue: this.props.adjustments,
       adjustmentInputValue: this.props.adjustments,
-      editing: false
+      editing: false,
+      reviewed: this.props.reviewed
     };
   }
 
   static get propTypes() {
-    const { number, string, func } = PropTypes;
+    const { number, string, func, bool } = PropTypes;
 
     return {
       id: number.isRequired,
@@ -26,6 +27,7 @@ export default class LineItemRow extends React.Component {
       actualAmount: number.isRequired,
       adjustments: number.isRequired,
       billableAmount: number.isRequired,
+      reviewed: bool.isRequired,
       notifySuccessfulSave: func.isRequired,
       notifyFailedSave: func.isRequired
     };
@@ -52,7 +54,7 @@ export default class LineItemRow extends React.Component {
       this.setState((prevState) => ({ editing: false, adjustmentInputValue: prevState.adjustmentValue }));
 
       notifyFailedSave();
-    })
+    });
   }
 
   allowEditing = () => {
@@ -63,6 +65,22 @@ export default class LineItemRow extends React.Component {
     const { value } = event.target;
 
     this.setState({ adjustmentInputValue: value });
+  }
+
+  markReviewed = () => {
+    const { id, notifySuccessfulSave, notifyFailedSave } = this.props;
+
+    axios.patch(
+      `http://localhost:3000/line_items/${id}`,
+      { reviewed: true }
+    ).then(() => {
+      this.setState({ reviewed: true, editing: false });
+
+      notifySuccessfulSave();
+    }).catch(() => {
+      this.setState({ editing: false });
+      notifyFailedSave();
+    });
   }
 
   renderAdjustments() {
@@ -76,13 +94,22 @@ export default class LineItemRow extends React.Component {
     return currencyFormat(adjustmentValue);
   }
 
-  renderEditButton() {
-    const { editing } = this.state;
+  renderActions() {
+    const { editing, reviewed } = this.state;
 
-    const buttonText = editing ? 'Save' : 'Edit';
-    const clickHandler = editing ? this.saveAdjustments : this.allowEditing;
+    if (reviewed) {
+      return <span>REVIEWED</span>;
+    }
 
-    return <button className="btn btn-primary" onClick={clickHandler}>{buttonText}</button>
+    const editButtonText = editing ? 'Save' : 'Edit';
+    const editClickHandler = editing ? this.saveAdjustments : this.allowEditing;
+
+    return (
+      <React.Fragment>
+        <button className="btn btn-primary" onClick={editClickHandler}>{editButtonText}</button>
+        <button className="btn btn-primary ml-1" onClick={this.markReviewed}>Mark reviewed</button>
+      </React.Fragment>
+    );
   }
 
   render() {
@@ -97,7 +124,7 @@ export default class LineItemRow extends React.Component {
         <td>{currencyFormat(actualAmount)}</td>
         <td>{this.renderAdjustments()}</td>
         <td>{currencyFormat(billableAmount)}</td>
-        <td>{this.renderEditButton()}</td>
+        <td>{this.renderActions()}</td>
       </tr>
     );
   }

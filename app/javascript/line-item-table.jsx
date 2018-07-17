@@ -5,7 +5,7 @@ import LineItemRow from './line-item-row';
 
 export default class LineItemTable extends React.Component {
   static get propTypes() {
-    const { shape, number, string, arrayOf, func } = PropTypes;
+    const { shape, number, string, arrayOf, func, bool } = PropTypes;
 
     return {
       lineItems: arrayOf(
@@ -15,7 +15,8 @@ export default class LineItemTable extends React.Component {
           bookedAmount: number,
           actualAmount: number,
           adjustments: number,
-          billableAmount: number
+          billableAmount: number,
+          reviewed: bool
         })
       ),
       notifySuccessfulSave: func.isRequired,

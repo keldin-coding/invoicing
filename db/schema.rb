@@ -12,7 +12,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20_180_715_050_256) do
+ActiveRecord::Schema.define(version: 2018_07_17_023536) do
   create_table 'campaigns', force: :cascade do |t|
     t.string 'name'
     t.datetime 'created_at', null: false
@@ -28,6 +28,7 @@ ActiveRecord::Schema.define(version: 20_180_715_050_256) do
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
     t.integer 'campaign_id'
+    t.boolean 'reviewed', default: false, null: false
     t.index ['campaign_id'], name: 'index_line_items_on_campaign_id'
     t.index ['name'], name: 'index_line_items_on_name'
   end

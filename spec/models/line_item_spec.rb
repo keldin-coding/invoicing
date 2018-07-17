@@ -21,6 +21,30 @@ describe LineItem, type: :model do
     it { is_expected.to validate_presence_of(:campaign) }
   end
 
+  describe 'after find' do
+    context 'when reviewed is set to true' do
+      it 'marks the record as readonly' do
+        create(:line_item, reviewed: true)
+
+        expect(LineItem.first).to be_readonly
+      end
+    end
+
+    context 'when reviewed is set to false' do
+      it 'does not mark the record as readonly' do
+        create(:line_item, reviewed: false)
+
+        expect(LineItem.first).not_to be_readonly
+      end
+    end
+
+    context 'for new line items' do
+      it 'does not make the record readonly' do
+        expect(build(:line_item)).not_to be_readonly
+      end
+    end
+  end
+
   describe '#billable_amount' do
     let(:line_item) { build(:line_item, actual_amount: 100, adjustments: -10) }
 

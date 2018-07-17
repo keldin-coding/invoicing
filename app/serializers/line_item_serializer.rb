@@ -8,7 +8,8 @@ class LineItemSerializer < ApplicationSerializer
       bookedAmount: booked_amount,
       actualAmount: actual_amount,
       adjustments: adjustments,
-      billableAmount: billable_amount
+      billableAmount: billable_amount,
+      reviewed: record.reviewed
     }
   end
 

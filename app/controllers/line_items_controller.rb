@@ -12,6 +12,6 @@ class LineItemsController < ApplicationController
   private
 
   def update_params
-    params.permit(:adjustments)
+    params.permit(:adjustments, :reviewed)
   end
 end

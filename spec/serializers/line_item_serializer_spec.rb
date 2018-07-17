@@ -31,5 +31,9 @@ describe LineItemSerializer do
     it 'includes the billableAmount rounded to four decimal points' do
       expect(subject).to match(hash_including(billableAmount: line_item.billable_amount.round(4)))
     end
+
+    it 'includes the reviewed value' do
+      expect(subject).to include(:reviewed)
+    end
   end
 end
