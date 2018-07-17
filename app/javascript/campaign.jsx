@@ -6,27 +6,29 @@ import currencyFormat from './currency-format';
 
 export default class Campaign extends React.Component {
   static get propTypes() {
-    const { shape, string, arrayOf, number } = PropTypes;
-    
+    const { shape, string, arrayOf, number, func } = PropTypes;
+
     return {
       id: number.isRequired,
       name: string.isRequired,
       lineItems: arrayOf(
         shape({
-          id: number, 
+          id: number,
           name: string,
-          campaignName: string, 
-          bookedAmount: number, 
-          actualAmount: number, 
-          adjustments: number 
+          campaignName: string,
+          bookedAmount: number,
+          actualAmount: number,
+          adjustments: number
         })
       ).isRequired,
-      billableAmount: number.isRequired
+      billableAmount: number.isRequired,
+      notifySuccessfulSave: func.isRequired,
+      notifyFailedSave: func.isRequired
     };
   }
 
   render() {
-    const { id, name, billableAmount, lineItems } = this.props;
+    const { id, name, billableAmount, lineItems, notifySuccessfulSave, notifyFailedSave } = this.props;
 
     return (
       <div id={`campaign-${id}`}>
@@ -36,7 +38,11 @@ export default class Campaign extends React.Component {
             {currencyFormat(billableAmount)}
           </span>
         </h2>
-        <LineItemTable lineItems={lineItems} />
+        <LineItemTable
+          lineItems={lineItems}
+          notifySuccessfulSave={notifySuccessfulSave}
+          notifyFailedSave={notifyFailedSave}
+        />
       </div>
     );
   }

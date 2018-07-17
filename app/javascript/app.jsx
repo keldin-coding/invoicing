@@ -6,6 +6,8 @@ import axios from 'axios';
 import Campaign from './campaign';
 import TitleBar from './title-bar';
 import LoadMoreButton from './load-more-button';
+import randomString from './random-string';
+import Alert from './alert';
 
 export default class App extends React.Component {
   constructor(...args) {
@@ -16,7 +18,8 @@ export default class App extends React.Component {
       grandTotal: 0,
       loadedData: false,
       filterValue: '',
-      page: 1
+      page: 1,
+      alerts: []
     };
   }
 
@@ -39,10 +42,54 @@ export default class App extends React.Component {
     // Hardcoded URL is less good. An SPA would ideally use something
     // like React Router to handle this better. Or a wrapper around all requests
     // so that this could be configured and referenced from one place.
-    this.makeRequest({ page: 1, campaignName: '' });
+    this.requestCampaigns({ page: 1, campaignName: '' });
   }
 
-  makeRequest = ({ page, campaignName }) => {
+  handleSuccessfulSave = () => {
+    this.setState((prevState) => {
+      const alertId = randomString(8);
+
+      return {
+        alerts: prevState.alerts.concat(
+          <Alert
+          key={alertId}
+          id={alertId}
+          message="Your changes have been saved!"
+          type="success"
+          onClick={this.handleAlertClick}
+        />
+        )
+      };
+    });
+  }
+
+  handleFailedSave = () => {
+    this.setState((prevState) => {
+      const alertId = randomString(8);
+
+      return {
+        alerts: prevState.alerts.concat(
+          <Alert
+            key={alertId}
+            id={alertId}
+            message="Something went wrong when saving your changes."
+            type="error"
+            onClick={this.handleAlertClick}
+          />
+        )
+      };
+    });
+  }
+
+  handleAlertClick = (id) => {
+    this.setState((prevState) => {
+      return {
+        alerts: prevState.alerts.filter((comp) => comp.props.id !== id)
+      };
+    });
+  }
+
+  requestCampaigns = ({ page, campaignName }) => {
     axios.get('http://localhost:3000/campaigns', {
       params: {
         campaign_name: campaignName,
@@ -54,7 +101,7 @@ export default class App extends React.Component {
   handleFilterChange = filterValue => {
     this.setState({ loadedData: false, page: 1, filterValue, campaigns: [] });
 
-    this.makeRequest({ page: 1, campaignName: filterValue })
+    this.requestCampaigns({ page: 1, campaignName: filterValue })
   }
 
   handleLoadMore = () => {
@@ -63,19 +110,35 @@ export default class App extends React.Component {
 
       const newPage = prevState.page + 1
 
-      this.makeRequest({ page: newPage, campaignName });
+      this.requestCampaigns({ page: newPage, campaignName });
 
       return { page: newPage };
     });
   }
 
+  renderCampaigns() {
+    const { campaigns } = this.state;
+
+    return campaigns.map(campaign => {
+      return (<Campaign
+        key={campaign.name}
+        notifySuccessfulSave={this.handleSuccessfulSave}
+        notifyFailedSave={this.handleFailedSave}
+        {...campaign}
+      />);
+    });
+  }
+
   render() {
-    const { campaigns, grandTotal, loadedData, moreResults } = this.state;
+    const { grandTotal, loadedData, moreResults, alerts } = this.state;
 
     return (
       <div>
+        <div id="alert-container">
+          {alerts}
+        </div>
         {<TitleBar grandTotal={grandTotal} onFilterChange={this.handleFilterChange}/>}
-        {loadedData ? campaigns.map(campaign => <Campaign key={campaign.name} {...campaign}/>) : <div className="loading">Loading...</div>}
+        {!!loadedData ? this.renderCampaigns() : <div className="loading">Loading...</div>}
         <LoadMoreButton loadingData={!loadedData} moreResults={moreResults} onClick={this.handleLoadMore} />
       </div>
     );

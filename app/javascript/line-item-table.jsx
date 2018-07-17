@@ -5,19 +5,21 @@ import LineItemRow from './line-item-row';
 
 export default class LineItemTable extends React.Component {
   static get propTypes() {
-    const { shape, number, string, arrayOf } = PropTypes;
+    const { shape, number, string, arrayOf, func } = PropTypes;
 
     return {
       lineItems: arrayOf(
         shape({
-          id: number, 
+          id: number,
           name: string,
-          bookedAmount: number, 
-          actualAmount: number, 
+          bookedAmount: number,
+          actualAmount: number,
           adjustments: number,
           billableAmount: number
         })
-      )
+      ),
+      notifySuccessfulSave: func.isRequired,
+      notifyFailedSave: func.isRequired
     };
   }
 
@@ -26,7 +28,7 @@ export default class LineItemTable extends React.Component {
   }
 
   render() {
-    const { lineItems } = this.props;
+    const { lineItems, notifySuccessfulSave, notifyFailedSave } = this.props;
 
     return (
       <table className="table table-striped">
@@ -37,10 +39,20 @@ export default class LineItemTable extends React.Component {
             <th>Actual Amount</th>
             <th>Adjustments</th>
             <th>Billable Amount</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {lineItems.map(item => <LineItemRow key={item.id} {...item}/>)}
+          {
+            lineItems.map(item =>
+              <LineItemRow
+                key={item.id}
+                notifySuccessfulSave={notifySuccessfulSave}
+                notifyFailedSave={notifyFailedSave}
+                {...item}
+              />
+            )
+          }
         </tbody>
       </table>
     );

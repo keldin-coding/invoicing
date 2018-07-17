@@ -6,5 +6,6 @@ Rails.application.routes.draw do
 
   defaults format: :json do
     resources :campaigns, only: [:index]
+    resources :line_items, only: [:update]
   end
 end

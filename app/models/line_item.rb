@@ -4,9 +4,9 @@ class LineItem < ApplicationRecord
   belongs_to :campaign
 
   validates :name, presence: true, uniqueness: { scope: :campaign_id }
-  validates :booked_amount, presence: true
-  validates :actual_amount, presence: true
-  validates :adjustments, presence: true
+  validates :booked_amount, presence: true, numericality: true
+  validates :actual_amount, presence: true, numericality: true
+  validates :adjustments, presence: true, numericality: true
   validates :campaign, presence: true
 
   def billable_amount
