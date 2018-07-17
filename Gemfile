@@ -24,7 +24,6 @@ gem 'turbolinks', '~> 5'
 gem 'jbuilder', '~> 2.5'
 
 gem 'webpacker', '~> 3.5'
-gem 'factory_bot', '~> 4.10'
 # Use Redis adapter to run Action Cable in production
 # gem 'redis', '~> 4.0'
 # Use ActiveModel has_secure_password
@@ -42,6 +41,7 @@ gem 'bootsnap', '>= 1.1.0', require: false
 gem 'oj', '~> 3.6.4'
 
 group :development, :test do
+  gem 'factory_bot', '~> 4.10'
   gem 'faker', '~> 1.9'
   gem 'pry-byebug'
   gem 'rspec-rails'

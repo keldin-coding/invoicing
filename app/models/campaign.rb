@@ -3,7 +3,7 @@
 class Campaign < ApplicationRecord
   has_many :line_items
 
-  scope :with_prefix, -> (prefix) { prefix.blank? ? all : where('name like :prefix', prefix: "#{prefix}%") }
+  scope :with_prefix, ->(prefix) { prefix.blank? ? all : where('name like :prefix', prefix: "#{prefix}%") }
 
   validates :name, presence: true, uniqueness: true
 

@@ -4,11 +4,12 @@ class CampaignsController < ApplicationController
   PAGE_SIZE = 10
 
   def index
-    campaigns = Campaign.includes(:line_items).with_prefix(params[:campaign_name].to_s).limit(PAGE_SIZE).offset(offset)
+    campaigns = campaign_query.limit(PAGE_SIZE).offset(offset)
 
     render json: {
       campaigns: campaigns.map(&:as_json),
-      moreResults: Campaign.offset(offset + PAGE_SIZE).exists?
+      moreResults: more_results?,
+      grandTotal: grand_total
     }
   end
 
@@ -22,5 +23,17 @@ class CampaignsController < ApplicationController
 
   def offset
     (page_number - 1) * PAGE_SIZE
+  end
+
+  def campaign_query
+    Campaign.includes(:line_items).with_prefix(params[:campaign_name].to_s)
+  end
+
+  def grand_total
+    campaign_query.reduce(0) { |acc, c| acc + c.billable_amount }.round(4)
+  end
+
+  def more_results?
+    campaign_query.offset(offset + PAGE_SIZE).exists?
   end
 end

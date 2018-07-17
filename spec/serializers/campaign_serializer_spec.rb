@@ -16,7 +16,7 @@ describe CampaignSerializer do
       line_item_3
     end
 
-    it "includes the id" do
+    it 'includes the id' do
       expect(subject[:id]).to eq(campaign.id)
     end
 

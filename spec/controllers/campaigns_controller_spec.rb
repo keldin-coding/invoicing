@@ -9,16 +9,15 @@ describe CampaignsController, type: :controller do
     it 'returns the the campaigns with their line items' do
       campaign = create(:campaign)
 
-      first = create(:line_item, campaign: campaign)
-      second = create(:line_item, campaign: campaign)
+      create(:line_item, campaign: campaign)
+      create(:line_item, campaign: campaign)
 
       get :index
 
       expect(parsed_response).to eq(
-        {
-          campaigns: [campaign.as_json],
-          moreResults: false
-        }
+        campaigns: [campaign.as_json],
+        moreResults: false,
+        grandTotal: campaign.billable_amount.round(4)
       )
     end
 
@@ -26,7 +25,39 @@ describe CampaignsController, type: :controller do
       it 'returns an empty array' do
         get :index
 
-        expect(parsed_response).to eq({campaigns: [], moreResults: false})
+        expect(parsed_response).to eq(campaigns: [], moreResults: false, grandTotal: 0)
+      end
+    end
+
+    describe 'filtering' do
+      it 'returns the grandTotal based on the filtering' do
+        campaign1 = create(:campaign, name: 'abba')
+        campaign2 = create(:campaign, name: 'xylophone')
+        campaign3 = create(:campaign, name: 'abra kadabra')
+
+        create(:line_item, campaign: campaign1)
+        create(:line_item, campaign: campaign1)
+        create(:line_item, campaign: campaign2)
+        create(:line_item, campaign: campaign2)
+        create(:line_item, campaign: campaign3)
+
+        get :index, params: { campaign_name: 'ab' }
+
+        expected_total = (campaign1.billable_amount + campaign3.billable_amount).round(4)
+
+        expect(parsed_response).to match(hash_including(grandTotal: expected_total))
+      end
+
+      context 'with no matching campaigns' do
+        it 'returns an empty result' do
+          create(:campaign, name: 'abba')
+          create(:campaign, name: 'xylophone')
+          create(:campaign, name: 'abra kadabra')
+
+          get :index, params: { campaign_name: 'susan' }
+
+          expect(parsed_response).to eq(campaigns: [], moreResults: false, grandTotal: 0)
+        end
       end
     end
 
@@ -41,7 +72,7 @@ describe CampaignsController, type: :controller do
         it 'returns the first page of results' do
           get :index, params: { page: -1 }
 
-          expect(parsed_response).to eq({campaigns: [Campaign.first.as_json], moreResults: false})
+          expect(parsed_response).to eq(campaigns: [Campaign.first.as_json], moreResults: false, grandTotal: 0)
         end
       end
 
@@ -85,7 +116,9 @@ describe CampaignsController, type: :controller do
         it 'returns those campaigns' do
           get :index, params: { page: 1 }
 
-          expect(parsed_response).to match(hash_including(campaigns: Campaign.first(number_of_campaigns).map(&:as_json)))
+          expect(parsed_response).to match(
+            hash_including(campaigns: Campaign.first(number_of_campaigns).map(&:as_json))
+          )
         end
       end
 

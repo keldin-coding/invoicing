@@ -5,6 +5,7 @@ import axios from 'axios';
 
 import Campaign from './campaign';
 import TitleBar from './title-bar';
+import LoadMoreButton from './load-more-button';
 
 export default class App extends React.Component {
   constructor(...args) {
@@ -14,48 +15,68 @@ export default class App extends React.Component {
       campaigns: [],
       grandTotal: 0,
       loadedData: false,
-      filterValue: ''
+      filterValue: '',
+      page: 1
     };
   }
 
   responseHandler = response => {
-    const calculatedGrandTotal = response.data.reduce(
-      (acc, { billableAmount }) => { return acc + billableAmount },
-      0
-    );
+    this.setState((prevState) => {
+      const { campaigns, grandTotal } = prevState;
 
-    this.setState(
       {
-        campaigns: response.data,
-        grandTotal: calculatedGrandTotal,
-        loadedData: true
+        return {
+          campaigns: campaigns.concat(response.data.campaigns),
+          loadedData: true,
+          moreResults: response.data.moreResults,
+          grandTotal: response.data.grandTotal
+        }
       }
-    );
+    });
   }
 
   componentDidMount() {
     // Hardcoded URL is less good. An SPA would ideally use something
     // like React Router to handle this better. Or a wrapper around all requests
     // so that this could be configured and referenced from one place.
-    axios.get('http://localhost:3000/campaigns').then(this.responseHandler);
+    this.makeRequest({ page: 1, campaignName: '' });
   }
 
-  handleFilterChange = filterValue => {
-    this.setState({ loadedData: false });
+  makeRequest = ({ page, campaignName }) => {
     axios.get('http://localhost:3000/campaigns', {
       params: {
-        campaign_name: filterValue
+        campaign_name: campaignName,
+        page
       }
     }).then(this.responseHandler)
   }
 
+  handleFilterChange = filterValue => {
+    this.setState({ loadedData: false, page: 1, filterValue, campaigns: [] });
+
+    this.makeRequest({ page: 1, campaignName: filterValue })
+  }
+
+  handleLoadMore = () => {
+    this.setState((prevState) => {
+      const { page, filterValue: campaignName } = prevState;
+
+      const newPage = prevState.page + 1
+
+      this.makeRequest({ page: newPage, campaignName });
+
+      return { page: newPage };
+    });
+  }
+
   render() {
-    const { campaigns, grandTotal, loadedData } = this.state;
+    const { campaigns, grandTotal, loadedData, moreResults } = this.state;
 
     return (
       <div>
         {<TitleBar grandTotal={grandTotal} onFilterChange={this.handleFilterChange}/>}
-        {loadedData ? campaigns.map(campaign => <Campaign key={campaign.id} {...campaign}/>) : <div className="loading">Loading...</div>}
+        {loadedData ? campaigns.map(campaign => <Campaign key={campaign.name} {...campaign}/>) : <div className="loading">Loading...</div>}
+        <LoadMoreButton loadingData={!loadedData} moreResults={moreResults} onClick={this.handleLoadMore} />
       </div>
     );
   }
