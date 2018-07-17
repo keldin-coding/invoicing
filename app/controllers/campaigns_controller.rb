@@ -13,6 +13,18 @@ class CampaignsController < ApplicationController
     }
   end
 
+  def update
+    unless params[:reviewed]
+      render json: { error: 'Unknown update parameter' }, status: 400
+      return
+    end
+
+    campaign = Campaign.find(params[:id])
+    campaign.line_items.update_all(reviewed: true)
+
+    render json: campaign
+  end
+
   private
 
   def page_number

@@ -124,6 +124,7 @@ export default class App extends React.Component {
         key={campaign.name}
         notifySuccessfulSave={this.handleSuccessfulSave}
         notifyFailedSave={this.handleFailedSave}
+        onCampaignSave={this.handleCampaignSaved}
         {...campaign}
       />);
     });

@@ -3,9 +3,9 @@
 require 'rails_helper'
 
 describe CampaignsController, type: :controller do
-  describe '#index' do
-    subject(:parsed_response) { Oj.load(response.body, symbol_keys: true) }
+  subject(:parsed_response) { Oj.load(response.body, symbol_keys: true) }
 
+  describe '#index' do
     it 'returns the the campaigns with their line items' do
       campaign = create(:campaign)
 
@@ -148,6 +148,51 @@ describe CampaignsController, type: :controller do
 
           expect(parsed_response).to match(hash_including(campaigns: Campaign.limit(10).offset(10).map(&:as_json)))
         end
+      end
+    end
+  end
+
+  describe '#update' do
+    context 'when requesting with the reviewed param' do
+      it 'returns a 200' do
+        campaign = create(:campaign)
+
+        patch :update, params: { id: campaign.id, reviewed: true }
+
+        expect(response.status).to eq(200)
+      end
+
+      it 'returns the updated campaign' do
+        campaign = create(:campaign)
+
+        line_item1 = create(:line_item)
+        line_item2 = create(:line_item)
+
+        patch :update, params: { id: campaign.id, reviewed: true }
+
+        expect(parsed_response).to eq(campaign.as_json)
+        expect(parsed_response[:lineItems].map { |i| i[:reviewed] }).to all(eq(true))
+       end
+
+      it "marks all of the campaign's line items as reviewed" do
+        campaign = create(:campaign)
+
+        line_item1 = create(:line_item)
+        line_item2 = create(:line_item)
+
+        patch :update, params: { id: campaign.id, reviewed: true }
+
+        expect(campaign.line_items).to all(be_reviewed)
+      end
+    end
+
+    context 'requesting without the reviewed param' do
+      it 'returns a 400' do
+        campaign = create(:campaign)
+
+        patch :update, params: { id: campaign.id, something_else: false }
+
+        expect(response.status).to eq(400)
       end
     end
   end

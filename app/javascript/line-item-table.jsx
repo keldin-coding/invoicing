@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import LineItemRow from './line-item-row';
+import LineItemRowController from './line-item-row-controller';
 
 export default class LineItemTable extends React.Component {
   static get propTypes() {
@@ -46,7 +46,7 @@ export default class LineItemTable extends React.Component {
         <tbody>
           {
             lineItems.map(item =>
-              <LineItemRow
+              <LineItemRowController
                 key={item.id}
                 notifySuccessfulSave={notifySuccessfulSave}
                 notifyFailedSave={notifyFailedSave}
